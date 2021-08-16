@@ -67,7 +67,7 @@ public class FredService {
     }
 
     public Flux<Observation> getUsGovernmentBond10Y() {
-        Flux<Observation> data = callUsbond10Y("2021-07-01", "2021-07-31")
+        Flux<Observation> data = callUsbond10Y("2020-07-01", "2020-07-31")
                 .flatMapMany(it -> {
                     List<Map<String, String>> list = (List<Map<String, String>>) it.get("observations");
                     return Flux.fromStream(
@@ -77,7 +77,7 @@ public class FredService {
         return data;
     }
 
-    //    @Scheduled(fixedDelay = 60000)
+    //@Scheduled(fixedDelay = 60000)
     public void updateFredDataRegularly() {
         log.info("Now updating freddata");
         String from = formatter.format(LocalDateTime.now().minusMonths(6));
@@ -92,6 +92,7 @@ public class FredService {
     }
 
     public List<Observation> getStoredFredData(String seriesId, String from, String to) {
+        log.info("getting stored fred data");
         return fredRepository.findAllBySeriesIdAndObservationDateAfterAndObservationDateBefore(seriesId, from, to)
                 .stream().map(Observation::fromFredData).collect(Collectors.toList());
 //                .map(Observation::fromFredData) == .map(fredDataEntity -> Observation.fromFredData(fredDataEntity))
